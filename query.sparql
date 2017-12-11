@@ -1,0 +1,30 @@
+SELECT ?langId ?langLabel (MIN(?langYear) as ?languageYear) ?influencedId ?influencedLabel  (MIN(?influYear) as ?influencedYear) 
+WHERE {
+  ?lang (wdt:P31/wdt:P279*) wd:Q9143.
+  BIND(SUBSTR(STR(?lang), STRLEN(STR(wd:)) + 2) AS ?langId)
+  OPTIONAL { ?lang wdt:P571 ?langDate. }
+  BIND(IF(BOUND(?langDate), YEAR(?langDate), "<nothing>") AS ?langYear)
+  OPTIONAL { ?influenced (wdt:P31/wdt:P279*) wd:Q9143;
+                          wdt:P737 ?lang.
+             ?influenced wdt:P571 ?influDate. }
+  BIND(IF(BOUND(?influenced), SUBSTR(STR(?influenced), STRLEN(STR(wd:)) + 2), "<nothing>") AS ?influencedId)
+  BIND(IF(BOUND(?influDate), YEAR(?influDate), "<nothing>") AS ?influYear)
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+GROUP BY ?langId ?langLabel ?influencedId ?influencedLabel
+
+# faster query
+SELECT ?langId ?langLabel (MIN(?langYear) as ?languageYear) ?influencedId ?influencedLabel
+WHERE {
+  ?lang (wdt:P31/wdt:P279*) wd:Q9143.
+  BIND(SUBSTR(STR(?lang), STRLEN(STR(wd:)) + 2) AS ?langId)
+  OPTIONAL { ?lang wdt:P571 ?langDate. }
+  OPTIONAL { ?lang wdt:P577 ?langPub. }
+  BIND(IF(BOUND(?langDate), ?langDate, ?langPub) AS ?langDate)
+  BIND(IF(BOUND(?langDate), YEAR(?langDate), "<nothing>") AS ?langYear)
+  OPTIONAL { ?influenced (wdt:P31/wdt:P279*) wd:Q9143;
+                          wdt:P737 ?lang. }
+  BIND(IF(BOUND(?influenced), SUBSTR(STR(?influenced), STRLEN(STR(wd:)) + 2), "<nothing>") AS ?influencedId)
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+GROUP BY ?langId ?langLabel ?influencedId ?influencedLabel

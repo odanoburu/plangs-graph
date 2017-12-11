@@ -1,0 +1,185 @@
+               ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                VISUALIZING PROGRAMMING LANGUAGE HISTORY
+
+
+                             bruno cuconato
+               ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+                               2017-12-11
+
+
+Table of Contents
+─────────────────
+
+1 About
+2 Reason for existing
+3 Intention
+4 Target audience
+5 Format
+6 Resources
+7 Problems and future work
+
+
+
+
+
+1 About
+═══════
+
+  We offer a visualization of programming language genealogy, improving
+  and extending previous work. The basic layout is an interactive graph
+  showing which programming languages are said to have influenced other
+  programming languages[1], according to [Wikidata].
+
+  On the horizontal axis, we have the year in which a programming
+  language first appeared. Nodes are sorted vertically (by year)
+  according to the number of languages they have influenced, but their
+  exact position is randomly picked at every page rendering (only their
+  order is the same). The exception is over the nodes which have no
+  information about inception date; those are sorted horizontally on a
+  single line on the bottom of the graph. As an additional visual cue to
+  a node's importance, its radius grows linearly with its outdegree, up
+  to a certain limit.
+
+  By virtue of the [d3-sparql] library, our visualization is
+  self-updating, querying Wikidata's interface at every refresh. This
+  means that every future improvements to the underlying data (for
+  instance, adding a new programming language) will be incorporated
+  automatically to the visualization.
+
+  At the time of writing (2017-12-11), there are 1437 programming
+  languages Wikidata knows about, 902 of which have no information about
+  date of creation. The graph is currently relatively sparse, as there
+  is only information about 594 relations of influence between
+  languages.
+
+
+  [Wikidata] https://wikidata.org
+
+  [d3-sparql] https://github.com/zazuko/d3-sparql
+
+
+2 Reason for existing
+═════════════════════
+
+  The main reason for this visualization is to provide an interface for
+  visual exploration of programming language history, on the lines of
+  [this one] or the one in Figure [ref:planghist1972]. We have no
+  narrative to advance or support.
+
+  [./sammet1972.png]
+
+
+  [this one] http://rigaux.org/language-study/diagram.html
+
+
+3 Intention
+═══════════
+
+  Our intent with this proposal is to offer a pragmatic and analytical
+  setting for the visualization of programming language genealogy. We
+  have no need for convincing our readers of anything, or in provoking
+  emotions in them. In fact, our readers are invited to explore to data
+  so that they can provoke their own curiosity.
+
+
+4 Target audience
+═════════════════
+
+  We have no target audience in mind, although it is unlikely that
+  anyone without an interest in programming languages will read it. We
+  therefore assume from our readers a certain level of attraction to the
+  visualization's theme, which keeps us from having to catch their
+  interest in the way an ad designer has to catch her audience's
+  attention.
+
+
+5 Format
+════════
+
+  We employ the [D3.js library] to produce our visualization project. We
+  use [ariutta's pan-and-zoom library for SVG] to add those capabilities
+  to the SVG produced by D3. Another important component of our project
+  is the Wikidata query interface, which we access to obtain our
+  data. All in all, this project requires a working knowledge of
+  Javascript (programming language), SVG (XML-based vector image
+  format), HTML (markup language), and of SPARQL (semantic query
+  language).
+
+  Replicability: All code written will be available on GitHub, so that any
+                 replicability requirements should be sufficed.
+
+  Scalability: Scalability should not be a problem, as the growth in
+               programming languages is likely to be limited. There
+               currently exists a problem of scale, however, in that the
+               great number of nodes and edges can already hinder browser
+               performance.
+
+
+  [D3.js library] https://d3js.org
+
+  [ariutta's pan-and-zoom library for SVG]
+  https://github.com/ariutta/svg-pan-zoom
+
+
+6 Resources
+═══════════
+
+  Server: the visualization can be done 100% on client-side, so obtaining
+          a decent server is not necessary. We depend on Wikidata's and on
+          D3.js's servers, though.
+
+  Browsers: we will take D3.js's statement of compatibility at face value,
+            so we believe our visualization should work on any modern
+            browser (Google Chrome, Mozilla Firefox, Apple Safari,
+            Microsoft Edge). Tests will be carried solely on Chrome.
+
+
+7 Problems and future work
+══════════════════════════
+
+  Node positioning: We decided not to use a graph where nodes were placed
+                    by force simulation, using D3's module /d3-force/. We
+                    had a technical reason for this: in this kind of
+                    visualizations, a node's position has no meaning in
+                    itself, which prevents us from using it to convey
+                    information to the viewer. We also had a practical
+                    motive: the simulation necessary to determine the
+                    nodes positions is quite expensive in terms of
+                    resources, specially if there are many nodes – this
+                    made our visualization very slow to render.
+
+  Wikidata's data: We found several shortcomings on Wikidata's data: some
+                   programming languages had more than one inception date,
+                   while most of them had none. The first problem was
+                   overcome by choosing the minimal date provided, while
+                   the latter demanded special positions in the graph for
+                   these nodes.
+
+  Wikidata's query interface: there is an open bug (see tickets [T178564]
+                              and [T165228]) in Wikidata's query interface
+                              in which the query results have wrong
+                              encoding. This does not prevent the
+                              visualization, but does create some weird
+                              characters in the name's of a few languages.
+
+  Exploration: the wealth of information made it very difficult to create
+               a visualization that was easy to navigate. We add zooming
+               and panning to the visualization in order to improve this
+               situation, but as a trade-off we lost the capability of
+               searching for a given node. We are not satisfied with our
+               approach to the problem.
+
+
+  [T178564] https://phabricator.wikimedia.org/T178564
+
+  [T165228] https://phabricator.wikimedia.org/T165228
+
+
+
+Footnotes
+─────────
+
+[1] I am using programming language /history/, /genealogy/, and
+/network/ interchangeably, to this meaning.
